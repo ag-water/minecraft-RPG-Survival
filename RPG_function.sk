@@ -1,0 +1,68 @@
+# 인벤토리 메타 데이터를 비교
+function MetaDataCompare(1: inventory, 2: inventory) :: boolean:
+    return false if (name of {_1}) != (name of {_2})
+    return false if (rows of {_1}) != (rows of {_2})
+    return false if (type of {_1}) != (type of {_2})
+    return true
+
+# 작물을 씨앗 아이템으로 변환
+function CropsToSeed(1: block) :: itemtype:
+    return seed if {_1} is ripe wheat plant
+    return carrot if {_1} is ripe carrot plant
+    return potato if {_1} is ripe potato plant
+    return beetroot seed if {_1} is ripe beetroot plant
+
+# 칭호 지급
+function AddStyle(1: player, 2: text):
+    if {style.%uuid of {_1}%::*} contains {stylelist::%{_2}%}:
+        exit
+    else:
+        add {stylelist::%{_2}%} to {style.%uuid of {_1}%::*}
+        send "%{S}% &f[%{stylelist::%{_2}%}%&f]&2칭호가 지급되었습니다." to {_1}
+
+# 스탯 포인트 증가
+function StatusIncrease(1:player, 2: text) :: boolean:
+    if {status::%uuid of {_1}%::point} > 0:
+        if {status::%uuid of {_1}%::%{_2}%} < 30:
+            add 1 to {status::%uuid of {_1}%::%{_2}%}
+            remove 1 from {status::%uuid of {_1}%::point}
+            send "%{S}% RPG 스탯 1을 올렸습니다." to {_1}
+
+            if {_2} is "mining":
+                if {status::%uuid of {_1}%::%{_2}%} is 15:
+                    AddStyle({_1}, "광질 스탯 15레벨 달성")
+
+                else if {status::%uuid of {_1}%::%{_2}%} is 30:
+                    AddStyle({_1}, "광질 스탯 30레벨 달성")
+
+            else if {_2} is "farming":
+                if {status::%uuid of {_1}%::%{_2}%} is 15:
+                    AddStyle({_1}, "농사 스탯 15레벨 달성")
+                else if {status::%uuid of {_1}%::%{_2}%} is 30:
+                    AddStyle({_1}, "농사 스탯 30레벨 달성")
+
+            else if {_2} is "fishing":
+                if {status::%uuid of {_1}%::%{_2}%} is 15:
+                    AddStyle({_1}, "낚시 스탯 15레벨 달성")
+                else if {status::%uuid of {_1}%::%{_2}%} is 30:
+                    AddStyle({_1}, "낚시 스탯 30레벨 달성")
+
+            else if {_2} is "hunting":
+                if {status::%uuid of {_1}%::%{_2}%} is 15:
+                    AddStyle({_1}, "사냥 스탯 15레벨 달성")
+                else if {status::%uuid of {_1}%::%{_2}%} is 30:
+                    AddStyle({_1}, "사냥 스탯 30레벨 달성")
+
+            return true
+        else:
+            send "%{W}% RPG 스탯은 30레벨까지 올릴 수 있습니다." to {_1}
+            
+            return false
+    else:
+        send "%{W}% 스탯 포인트가 부족합니다." to {_1}
+
+        return false
+
+# 보유중인 E를 출력
+function SendE(1:player):
+    send "%{S}% 현재 &6%{E.%uuid of {_1}%}%&e&lE&2를 보유하고 있습니다." to {_1}

@@ -1,0 +1,321 @@
+# 서버 도움말
+command /도움말:
+    aliases: /h
+    trigger:
+        send "&8=============================================="
+        send "&a서버 정보 및 공지 확인"
+        send "&2새로운 공지 24-06-17 긴급 패치 사항"
+        send "<ttp: &l&7클릭하면 서버 GIT으로 이동합니다.><link:https://github.com/ag-water/minecraft-RPG-Survival>&e&l[링크]<reset>"
+        send "&8=============================================="
+
+# GUI 열기
+command /gui:
+    aliases: /g
+    trigger:
+        if {gui.%uuid of player%} is set:
+            delete {gui.%uuid of player%}
+            send "%{S}% [F]키를 눌러 GUI를 열지 않습니다."
+        else:
+            set {gui.%uuid of player%} to 1
+            send "%{S}% [F]키를 눌러 GUI를 엽니다."
+
+# 플레이어 간 교환을 하는 커맨드
+command /교환 [<player>]:
+    aliases: /t
+    trigger:
+        if arg-1 is set:
+            if arg-1 is player:
+                send "%{W}% 자신과는 교환할 수 없습니다."
+                exit
+            if {trade.%uuid of arg-1%} is set:
+                send "%{W}% 이미 진행 중인 교환이 존재합니다."
+            else:
+                send "%{S}% &e%player%&2님에게서 교환 요청이 왔습니다." to arg-1
+                send formatted "%{S}% <ttp:클릭하면 %player%님과의 교환 화면으로 이동합니다.><cmd:/ta %player%>&3&l[수락 하기]<reset>" to arg-1
+                send "%{W}% 수락하지 않으면 10초 후에 자동으로 교환이 취소 됩니다." to arg-1
+                send "%{S}% &e%arg-1%&2님에게 성공적으로 교환 요청을 보냈습니다."
+
+                set {trade.%uuid of player%} to arg-1
+                set {trade.%uuid of arg-1%} to player
+
+                set {trade.cancel.%uuid of player%} to arg-1
+                set {trade.cancel.%uuid of arg-1%} to player
+
+                wait 10 seconds
+
+                if {allow.%uuid of arg-1%} is not set:
+                    send "%{W}% 거래가 자동으로 취소 되었습니다."
+                    send "%{W}% 거래가 자동으로 취소 되었습니다." to arg-1
+
+                    delete {trade.%uuid of player%}
+                    delete {trade.%uuid of arg-1%}
+        else:
+            send "%{W}% 교환하실 플레이어 이름을 입력해주세요."
+
+# 거래를 선택하는 커맨드
+command /ta [<player>]:
+    trigger:
+        if {trade.%uuid of player%} is arg-1:
+            set metadata tag "trade" of player to chest inventory with 2 rows named "&e%arg-1%&0님과 교환할 아이템"
+            set metadata tag "trade" of arg-1 to chest inventory with 2 rows named "&e%player%&0님과 교환할 아이템"
+
+            set {trade.%uuid of player%} to 1
+            set {trade.%uuid of arg-1%} to 1
+
+            loop 9 times:
+                set slot loop-number + 8 of metadata tag "trade" of player to {space}
+
+            loop 9 times:
+                set slot loop-number + 8 of metadata tag "trade" of arg-1 to {space}
+            
+            set slot 9 of metadata tag "trade" of player to paper with custom model data 28 named "&e수락"
+            set slot 9 of metadata tag "trade" of arg-1 to paper with custom model data 28 named "&e수락"
+
+            set slot 13 of metadata tag "trade" of player to skull of player named "&e%player%"
+            set slot 13 of metadata tag "trade" of arg-1 to skull of arg-1 named "&e%arg-1%"
+
+            set slot 17 of metadata tag "trade" of player to paper with custom model data 27 named "&c거절"
+            set slot 17 of metadata tag "trade" of arg-1 to paper with custom model data 27 named "&c거절"
+
+            open metadata tag "trade" of player to player
+            open metadata tag "trade" of arg-1 to arg-1
+
+            set {allow.%uuid of player%} to 1
+
+            wait 10.5 seconds
+
+            delete {allow.%uuid of player%}
+        else:
+            send "%{W}% 이미 만료된 거래 입니다."
+
+# 칭호 출력
+command /style [<text>] [<number>] [<number>]:
+    trigger:
+        if arg-1 is not set:
+            send "&2<&e%player%&2님의 칭호 목록>"
+            send formatted "<ttp:클릭하면 칭호 장착을 해제합니다.><cmd:/style delete>&f[&9&l장착 해제&f]<reset>"
+            loop {customstyle.%uuid of player%::*}:
+                send formatted "<ttp:커스텀 칭호><cmd:/style set 1 %loop-index%>&f[&l%loop-value%&f]<reset> [&6획득&f] [&9커스텀&f]"
+            loop {stylelist::*}:
+                loop {style.%uuid of player%::*}:
+                    if loop-value-2 contains loop-value-1:
+                        if loop-index-1 contains "히든":
+                            send formatted "<ttp:%loop-index-1%><cmd:/style set 2 %loop-index-2%>&f[%loop-value-2%&f]<reset> [&6획득&f] [&5히든&f]"
+                        else:
+                            send formatted "<ttp:%loop-index-1%><cmd:/style set 2 %loop-index-2%>&f[%loop-value-2%&f]<reset> [&6획득&f]"
+                    else:
+                        if loop-index-1 contains "히든":
+                            send formatted "<ttp:미공개>&f[&m%uncolored loop-value-1%&f]<reset> [&c미획득&f] [&5히든&f]"
+                        else:
+                            send formatted "<ttp:%loop-index-1%>&f[&m%uncolored loop-value-1%&f]<reset> [&c미획득&f]"
+
+                    exit 1 loop
+
+        else:
+            if arg-1 is "set":
+                if arg-2 is 1:
+                    set {_style} to {customstyle.%uuid of player%::%arg-3%}
+                else:
+                    set {_style} to {style.%uuid of player%::%arg-3%}
+
+                set {style.%uuid of player%} to {_style}
+
+                loop 100 times:
+                    send ""
+
+                send "%{S}% &f[%{_style}%&f]&2칭호로 변경되었습니다."
+
+            else if arg-1 is "delete":
+                delete {style.%uuid of player%}
+
+                loop 100 times:
+                    send ""
+
+                send "%{S}% 칭호 장착을 해제합니다."
+    
+# 이픔표에 이름 부여
+command /이름표 [<text>]:
+    aliases: /n
+    trigger:
+        if arg-1 is set:
+            if player's tool is name tag:
+                set name of player's tool to uncolored arg-1
+            else:
+                send "%{W}% 이름표를 손에 들고 입력해주세요."
+        else:
+            send "%{W}% 이름으로 입력할 텍스트를 같이 입력해주세요."
+
+# 수표 발행
+command /수표 [<number>]:
+    aliases: /e
+    trigger:
+        if arg-1 is set:
+            if arg-1 > 0:
+                if {E.%uuid of player%} >= arg-1:
+                    give player paper named "&e%player%&5님의 수표" with lore "&a우클릭하면 수표의 가격만큼 E를 얻습니다." and "&d%arg-1%&e&lE"
+                    
+                    remove arg-1 from {E.%uuid of player%}
+
+                    if arg-1 > 4999:
+                        AddStyle(player, "5000E 이상의 수표 발행")
+                    
+                    send "%{S}% &d%arg-1%&e&lE&2만큼의 수표를 발행하였습니다."
+                else:
+                    send "%{W}% 보유 중인 E가 부족합니다."
+            else:
+                send "%{W}% 1이상의 숫자를 입력해주세요."
+        else:
+            send "%{W}% 발행할 수표의 E를 입력해주세요."
+
+# 관리자에게 문의
+command /문의 [<text>]:
+    aliases: /i
+    trigger:
+        if arg-1 is set:
+            add "&f[&e%player%&f] : &2%arg-1%" to {inquiry::*}
+            
+            send "%{S}% 성공적으로 문의하였습니다."
+            
+            loop all players:
+                if player is op:
+                    send "%{S}% &e%player%&2님에게서 문의가 들어왔습니다." to loop-player
+        else:
+            send "%{W}% 관리자에게 문의하실 내용을 적어주세요."
+
+# 쿠폰
+command /쿠폰 [<text>]:
+    aliases: /c
+    trigger:
+        if arg-1 is set:
+            loop {coupon::*}:
+                if arg-1 is loop-index: 
+                    if {coupon.%uuid of player%::%arg-1%} is not set:
+                        player has enough space for loop-value:
+                            give player loop-value
+                            send "%{S}% 쿠폰 등록을 완료하였습니다."
+                            set {coupon.%uuid of player%::%arg-1%} to 1
+                            exit
+                        else:
+                            send "%{W}% 인벤토리에 공간이 부족합니다."
+                            exit
+                    else:
+                        send "%{W}% 이미 사용한 쿠폰입니다."
+                        exit
+            send "%{W}% 올바른 쿠폰을 입력해주세요."
+        else:
+            send "%{W}% 쿠폰을 입력해주세요."
+# ================================================== OP ================================================== #
+# 테스트용 커맨드
+command /test [<player>]:
+    permission: op
+    trigger:
+        send {style.%uuid of arg-1%::*}
+
+# 변수를 설정
+command /varset:
+    permission: op
+    trigger:
+        make player run cmd "/advancement grant %player% everything" as op
+        make player run cmd "/xp set %player% 0 levels" as op
+        make player run cmd "/xp set %player% 0" as op
+        set {E.%uuid of player%} to 0
+        set {style.randombox.%uuid of player%} to 0
+        set {style.enforce.%uuid of player%} to 0
+        set {style.fish.%uuid of player%} to 0
+        set {style.click.%uuid of player%} to 0
+        set {style.trade.%uuid of player%} to 0
+        set {attack.%uuid of player%} to 1
+        set {hp.%uuid of player%} to 20
+        set {speed.%uuid of player%} to 0.1
+        set {invsave.%uuid of player%} to 1
+
+# 플레이어의 정보를 조회
+command /db [<player>]:
+    permission: op
+    trigger:
+        send "&f[&e%arg-1%&f]"
+        loop {status::%uuid of arg-1%::*}:
+            send "%loop-index% - %loop-value%"
+
+        send "E - %{E.%uuid of arg-1%}%"
+        send "누적 E - %{style.E.%uuid of arg-1%}%"
+        send "누적 랜덤박스 - %{style.randombox.%uuid of arg-1%}%"
+        send "누적 인챈트 - %{style.enforce.%uuid of arg-1%}%"
+        send "누적 보물 물고기 - %{style.fish.%uuid of arg-1%}%"
+        send "누적 고대 잔해 - %{style.ancient.%uuid of arg-1%}%"
+        send "누적 케이크 - %{style.cake.%uuid of arg-1%}%"
+        send "누적 클릭 - %{style.click.%uuid of arg-1%}%"
+        send "누적 거래 - %{style.trade.%uuid of arg-1%}%"
+
+# 플레이어의 현재 칭호 조회
+command /stylelist [<player>]:
+    permission: op
+    trigger:
+        send "&e%arg-1%&2님의 칭호"
+        loop {customstyle.%uuid of arg-1%::*}:
+            send "%loop-value%"
+        loop {style.%uuid of arg-1%::*}:
+            send "%loop-value%"
+
+# 플레이어에게 칭호를 전달
+command /givestyle [<player>] [<text>] [<text>]:
+    permission: op
+    trigger:
+        add colored arg-2 to {customstyle.%uuid of arg-1%::*}
+        send "%{S}% &e%arg-1%&2님에게 &f[%colored arg-2%&f]&2칭호를 전달하였습니다."
+        send "%{S}% 요청하신 &f[%colored arg-2%&f]&2칭호를 받았습니다." to arg-1
+
+# 문의 내역 확인하기
+command /ilist [<number>]:
+    permission: op
+    trigger:
+        if arg-1 is not set:
+            loop {inquiry::*}:
+                send formatted "%colored loop-value% <ttp:클릭하면 문의 내역을 삭제합니다.><cmd:/ilist %loop-index%>&6[확인]<reset>"
+        else:
+            if {inquiry::%arg-1%} is set:
+                delete {inquiry::%arg-1%}
+                send "%{S}% 문의 내역을 삭제하였습니다."
+            else:
+                send "%{W}% 이미 삭제 된 문의 내역입니다."
+
+# 인벤 세이브 지급
+command /invsave [<player>] [<integer>]:
+    permission: op
+    trigger:
+        add arg-2 to {invsave.%uuid of arg-1%}
+
+        send "%{S}% &e%arg-1%&2님에게 인벤 세이브 권 &3%arg-2%&2개를 지급하였습니다."
+        send "%{S}% 인벤 세이브 권 &3%arg-2%개를 받았습니다." to arg-1
+
+# 누락 칭호 지급
+command /addstyle [<player>] [<text>]:
+    permission: op
+    trigger:
+        loop {stylelist::*}:
+            if arg-2 is uncolored loop-value:
+                if {style.%uuid of arg-1%::*} contains loop-value:
+                    send "%{W}% 이미 가지고 있는 칭호 입니다."
+                else: 
+                    add loop-value to {style.%uuid of arg-1%::*}
+                    send "%{S}% &e%arg-1%&2님에게 %loop-value%&2칭호를 지급 하였습니다."
+                    send "%{S}% %loop-value%&2칭호를 지급 받았습니다." to arg-1
+                exit
+        send "%{W}% 정확한 칭호 이름을 입력해주세요."
+
+# 서버 패치 내용 적용
+command /patch:
+    permission: op
+    trigger:
+        loop all offline players:
+            delete {xpgage.%uuid of loop-value%}
+            delete {status::%uuid of loop-value%::*}
+            delete {style.E.%uuid of loop-value%}
+            delete {style.ancient.%uuid of player%}
+            delete {style.cake.%uuid of player%}
+
+# 플레이어 인벤 열기
+command /inv [<player>]:
+    permission: op
+    trigger:
+        open arg-1's inventory to player

@@ -1,0 +1,144 @@
+variables:
+    {S} = "&a[SYSTEM]&2"
+    {W} = "[&c!&f]&c"
+    
+on load:
+    # GUI 칸막이
+    set {space} to paper with custom model data 26 named " "
+
+    # GUI 뒤로 가기
+    set {return} to paper with custom model data 27 named "&c뒤로 가기" with lore "클릭하면 메인 화면으로 이동합니다."
+
+    # 코인 종류
+    set {coin::*} to paper with custom model data 1 named "&6동전" with lore "&a판매소에 판매 시 &6&l1&e&lE&a를 얻습니다.", paper with custom model data 2 named "&7은전" with lore "&a판매소에 판매 시 &7&l10&e&lE&a를 얻습니다." and paper with custom model data 3 named "&e금전" with lore "&a&a판매소에 판매 시 &e&l100E&a를 얻습니다."
+
+    # 모든 변수 삭제 후 재설정
+    delete {sell::ore::*}
+    delete {sell::crops::*}
+    delete {sell::loot::*}
+    delete {stylelist::*}
+    delete {coupon::*}
+    
+    # 판매 가능 리스트
+    # 광물
+    set {sell::ore::flint} to 2
+    set {sell::ore::raw copper} to 2
+    set {sell::ore::lapis lazuli} to 2
+    set {sell::ore::nether quartz} to 2
+    set {sell::ore::raw iron} to 3
+    set {sell::ore::raw gold} to 3
+    set {sell::ore::redstone dust} to 5
+    set {sell::ore::emerald} to 5
+    set {sell::ore::amethyst shard} to 10
+    set {sell::ore::diamond} to 100
+    set {sell::ore::ancient debris} to 250
+
+    # 농작물
+    set {sell::crops::kelp} to 0.1
+    set {sell::crops::sugar cane} to 0.3
+    set {sell::crops::melon slice} to 0.5
+    set {sell::crops::cactus} to 1
+    set {sell::crops::glow berries} to 1
+    set {sell::crops::sweet berries} to 1
+    set {sell::crops::nether wart} to 1
+    set {sell::crops::brown mushroom} to 1
+    set {sell::crops::red mushroom} to 1
+    set {sell::crops::carrot} to 1
+    set {sell::crops::potato} to 1
+    set {sell::crops::cookie} to 1
+    set {sell::crops::pumpkin} to 3
+    set {sell::crops::beetroot} to 3
+    set {sell::crops::wheat} to 3
+    set {sell::crops::poisonous potato} to 5
+    set {sell::crops::pumpkin pie} to 10
+    set {sell::crops::cake} to 30
+
+    # 전리품
+    # 중립 몹 전리품
+    set {sell::loot::feather} to 5
+    set {sell::loot::raw chicken} to 10
+    set {sell::loot::leather} to 10
+    set {sell::loot::ink sac} to 10
+    set {sell::loot::glow ink sac} to 20
+
+    # 몬스터 전리품
+    set {sell::loot::gunpowder} to 5
+    set {sell::loot::spider eye} to 5
+    set {sell::loot::ender pearl} to 7
+    set {sell::loot::blaze rod} to 7
+    set {sell::loot::phantom membrane} to 10
+    set {sell::loot::ghast tear} to 10
+
+    # 인챈트 스크롤
+    set {scroll} to paper with custom model data 11 named "&2[부여] &e인챈트 부여 스크롤" with lore "&a강화 화면에서 사용할 수 있습니다." and "&5랜덤으로 해당 도구에 인챈트를 부여할 수 있다."
+
+    # 내구도 수리 스크롤
+    set {refair} to paper with custom model data 11 named "&2[수리] &e내구도 수리 스크롤" with lore "&a강화 화면에서 사용할 수 있습니다." and "&5장비(도구)의 내구도를 10%%만큼 수리합니다."
+
+    # 스크롤 조각
+    set {scrollpiece} to paper with custom model data 12 named "&2[조각] &6스크롤 조각" with lore "&a손에 들고 우클릭하여 사용할 수 있습니다." and "&55개를 모으면 랜덤한 스크롤 1개를 얻을 수 있습니다."
+
+    # 인벤 세이브 1회권
+    set {invsave} to paper with custom model data 11 named "&8인벤토리 세이브 1회권" with lore "&a우클릭 하여 사용할 수 있습니다." and "&5사용 시 인벤 세이브를 1회 추가합니다."
+
+    # 철 장비
+    set {iron::*} to iron shovel, iron pickaxe, iron axe, iron hoe, iron sword, iron helmet, iron chestplate, iron leggings and iron boots
+
+    # 랜덤 박스
+    set {randombox} to paper with custom model data 22 named "&5랜덤 박스" with lore "&a우클릭 시 랜덤 박스를 엽니다."
+
+    # 칭호
+    set {stylelist::랜덤 박스 1회 구매} to "&1도박 입문"
+    set {stylelist::랜덤 박스 10회 구매} to "&2패가망신의 씨앗"
+    set {stylelist::랜덤 박스 30회 구매} to "&3막을 수 없는 사람"
+    set {stylelist::랜덤 박스 50회 구매} to "&4승부사"
+
+    set {stylelist::인챈트 1회 부여} to "&1대장장이 입문"
+    set {stylelist::인챈트 5회 부여} to "&2노련한 대장장이"
+    set {stylelist::인챈트 10회 부여} to "&3숙련된 대장장이"
+    set {stylelist::인챈트 50회 부여} to "&4대장장이"
+
+    # 히든 칭호
+    set {stylelist::(히든) 5000E 이상의 수표 발행} to "&6보이지 않는 손"
+    set {stylelist::(히든) 랜덤 박스로 인벤토리 세이브 1회권 획득} to "&6타짜"
+    set {stylelist::(히든) 인챈트 1000회 부여} to "&6헤파이스토스"
+    set {stylelist::(히든) 거래 50회 달성} to "&6서버 공급 담당"
+    set {stylelist::(히든) 엔더 드래곤 알 획득} to "&6선발대"
+    set {stylelist::(히든) 겉날개를 얻은 후 삭제 시킴} to "&6겉날개는 금지야!"
+    set {stylelist::(히든) 보물 등급의 물고기 10회 낚시 성공} to "&6강태공"
+    set {stylelist::(히든) 나무 괭이에 인챈트 부여} to "&6쓸모없는 쓸데없는"
+    set {stylelist::(히든) 메인 GUI에서 오류 메세지 30회 출력} to "&6그만 좀 눌러"
+
+    # 작물 자동 심기 4가지 리스트
+    set {crops.auto::*} to ripe wheat plant, ripe carrot plant, ripe potato plant and ripe beetroot plant
+    
+    suppress variable save warning
+
+    # 메인 화면 GUI 설정
+    set {main_GUI} to chest inventory with 6 rows named "&0서버 GUI"
+
+    loop 55 times:
+        set slot loop-number - 1 of {main_GUI} to {space}
+
+    set slot 10 of {main_GUI} to paper with custom model data 40 named "&6상태" with lore "&a클릭하면 플레이어의 RPG 스탯 화면으로 이동합니다."
+
+    set slot 13 of {main_GUI} to paper with custom model data 21 named "&6거래소" with lore "&a클릭하면 물건을 팔 수 있는 거래소로 이동합니다."
+    
+    set slot 16 of {main_GUI} to paper with custom model data 12 named "&6스크롤 조각 구매" with lore "&a클릭하면 &53&e&lE&a로 스크롤 조각을 구매합니다."
+
+    set slot 19 of {main_GUI} to paper with custom model data 23 named "&6랜덤 박스 구매" with lore "&a클릭하면 &53&e&lE&a로 랜덤 박스를 구매합니다."
+
+    set slot 22 of {main_GUI} to paper with custom model data 34 named "&6강화" with lore "&a클릭하면 스크롤을 사용할 수 있는 화면으로 이동합니다."
+
+    set slot 25 of {main_GUI} to crafting table named "&6제작" with lore "&a클릭하면 이동 작업대를 엽니다." and "&c사냥 스탯 15레벨 이상부터 사용 가능합니다."
+
+    set slot 28 of {main_GUI} to paper with custom model data 41 named "&6창고" with lore "&a클릭하면 플레이어 고유 창고로 이동합니다."
+
+    set slot 31 of {main_GUI} to paper with custom model data 24 named "&6쓰레기통" with lore "&a클릭하면 쓰레기통으로 이동합니다."
+
+    set slot 34 of {main_GUI} to paper with custom model data 42 named "&6칭호" with lore "&a클릭하면 칭호 명령어를 실행합니다."
+
+    set slot 37 of {main_GUI} to paper with custom model data 33 named "&6도감" with lore "&a클릭하면 도감 화면으로 이동합니다."
+
+    # 쿠폰 관련 변수
+    set {coupon::미안하다 얘들아} to 5 of {randombox}

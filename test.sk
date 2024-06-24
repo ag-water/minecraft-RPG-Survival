@@ -1,0 +1,9 @@
+at 12:30:
+    set time to 12:00
+
+on weather change:
+    cancel event
+
+command /ttt:
+    trigger:
+        give player {coin::*}

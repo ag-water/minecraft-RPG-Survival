@@ -1,0 +1,166 @@
+# 랜덤 박스 사용
+on rightclick with paper:
+    if player's tool's name is "&5랜덤 박스":
+        cancel event
+        if player has enough space for item:
+            set {_percent} to random integer between 1 and 1000
+            set {_item} to 0
+
+            # 인벤토리 세이브 1회권
+            if {_percent} <= 1:
+                set {_item} to {invsave}
+                set {_broadcast} to "인벤토리 세이브 1회권"
+                AddStyle(player, "랜덤 박스로 인벤토리 세이브 1회권 획득")
+            
+            # 간이 날개
+            else if {_percent} <= 3:
+                set {_item} to elytra named "&e간이 날개" with lore "&c내구도를 수리하거나 인챈트를 부여할 수 없습니다."
+                set {_broadcast} to "간이 날개"
+
+            # 신호기
+            else if {_percent} <= 5:
+                set {_item} to beacon
+                set {_broadcast} to "신호기"
+
+            # 위더 스켈레톤 머리
+            else if {_percent} <= 10:
+                set {_item} to wither skeleton skull
+                set {_broadcast} to "위더 스켈레톤 머리"
+
+            # 마법이 부여된 황금 사과
+            else if {_percent} <= 15:
+                set {_item} to enchanted golden apple
+                set {_broadcast} to "마법이 부여된 황금 사과"
+
+            # 네더라이트 주괴
+            else if {_percent} <= 20:
+                set {_item} to netherite ingot
+                set {_broadcast} to "네더라이트 주괴"
+
+            # 무작위 형판
+            else if {_percent} <= 50:
+                set {_item} to smithing template
+
+            # 이름표
+            else if {_percent} <= 100:
+                set {_item} to name tag
+            
+            # 랜덤 철 장비
+            else if {_percent} <= 150:
+                set {_percent} to random integer between 1 and 9
+                
+                set {_item} to {iron::%{_percent}%}
+
+            # 폭죽
+            else if {_percent} <= 200:
+                set {_item} to firework rocket
+
+            # 랜덤 개구리 불
+            else if {_percent} <= 300:
+                set {_item} to froglight
+
+            # 슬라임 볼
+            else if {_percent} <= 400:
+                set {_item} to slime ball
+
+            # 바다 랜턴
+            else if {_percent} <= 500:
+                set {_item} to sea lantern
+
+            # 스크롤 조각
+            else if {_percent} <= 600:
+                set {_item} to {scrollpiece}
+
+            # 스테이크
+            else if {_percent} <= 700:
+                set {_item} to cooked beef
+
+            # 뼈
+            else if {_percent} <= 850:
+                set {_item} to bone
+
+            # 생대구
+            else:
+                set {_item} to cod
+
+            play sound "item.book.page_turn" with volume 1.5 and pitch 2
+            remove 1 of item from player's tool
+            give player {_item}
+            
+            if {_broadcast} is set:
+                play sound "entity.experience_orb.pickup" with volume 1.5 and pitch 2
+                broadcast "&e%player%&2님이 &5랜덤 박스&2로 [&4%{_broadcast}%&2]을/를 획득 하셨습니다 !!"
+        else:
+            send "%{W}% 인벤토리에 공간이 있는지 확인해주세요." to player
+
+# 스크롤 조각 사용
+on right click with paper:
+    if name of event-item is name of {scrollpiece}:
+        set {_amount} to item amount of player's tool
+        if {_amount} > 4:
+            set {_percent} to random integer between 1 and 2
+
+            play sound "item.book.page_turn" with volume 1.5 and pitch 2
+
+            if {_percent} is 1:
+                set {_scroll} to {scroll}
+            else:
+                set {_scroll} to {refair}
+
+            remove 5 of item from player's tool
+            give player {_scroll}
+            send "%{S}% 인챈트 부여 스크롤 조각 5개로 &e%name of {_scroll}%&2을 1개 얻었습니다." to player
+        else:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+            send "%{W}% 인챈트 부여 스크롤 조각 5개가 필요합니다." to player
+
+# 인챈트 북을 도감에 등록
+on rightclick with enchanted book:
+    loop {collection.%uuid of player%::*}:
+        if stored enchants of player's tool is stored enchants of loop-value:
+            send "%{W}% 이미 등록된 인챈트 북입니다." to player
+            stop
+    add player's tool to {collection.%uuid of player%::*}
+    delete player's tool
+
+    add 0.1 to {attack.%uuid of player%}
+    add 0.5 to {hp.%uuid of player%}
+    add 0.002 to {speed.%uuid of player%}
+
+    make player run cmd "/attribute %player% minecraft:generic.attack_damage base set %{attack.%uuid of player%}%" as op
+    make player run cmd "/attribute %player% minecraft:generic.max_health base set %{hp.%uuid of player%}%" as op
+    make player run cmd "/attribute %player% minecraft:generic.movement_speed base set %{speed.%uuid of player%}%" as op
+
+    send "%{S}% 인챈트 북을 성공적으로 등록하였습니다." to player
+
+# 아이템화된 E 사용
+on rightclick with paper:
+    if name of player's tool contains "&5님의 수표":
+        set {lore::*} to lore of player's tool
+
+        set {_E} to uncolored {lore::2}
+
+        replace all "E" with "" in {_E}
+        
+        set {_E} to {_E} parsed as integer
+
+        add {_E} to {E.%uuid of player%}
+
+        remove 1 of item from player' tool
+
+        play sound "entity.experience_orb.pickup" with volume 1.5 and pitch 2
+        send "%{S}% &3%{_E}%&e&lE&2를 획득하였습니다." to player
+        SendE(player)
+
+# 인벤 세이브 1회권 사용
+on rightclick with paper:
+    if name of player's tool contains "&8인벤토리 세이브 1회권":
+        add 1 to {invsave.%uuid of player%}
+        remove 1 of item from player's tool
+
+        send "%{S}% &3인벤토리 세이브 1회&2를 추가하였습니다." to player
+
+
+# 최초 엔더 드래곤 알을 획득하면 칭호
+on pick up of dragon egg:
+    AddStyle(player, "엔더 드래곤 알 획득")

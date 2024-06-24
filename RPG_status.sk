@@ -1,0 +1,88 @@
+# 농사 레벨에 따른 농작물 자동 심기
+on block break:
+    if {status::%uuid of player%::farming} > 29:
+        loop {crops.auto::*}:
+            if loop-value is type of event-block:
+                set {_s} to CropsToSeed(event-block)
+                if event-player has {_s}:
+                    remove 1 of {_s} from event-player's inventory
+                    set event-block's block data to "%raw name of event-block%[age=0]" parsed as blockdata
+
+# 낚시에 성공 시 커스텀 물고기 드랍
+on fishing:
+    if fish state is caught fish:      
+        # 물고기 종류만 커스텀 물고기로 변환
+        if item of fishing caught entity is pufferfish or cod or salmon or tropical fish:
+            # 30레벨 이상 C급 물고기가 낚이지 않음
+            if {status::%uuid of player%::fishing} > 29:
+                set {_noc} to 1 
+            
+            set {_percentage} to random integer between 1 to 100      
+
+            if {_noc} is not set:
+                # C급
+                if {_percentage} < 65:
+                    if {status::%uuid of player%::fishing} > 14:
+                        set {_cm} to random integer between 5 to 10
+                    else:
+                        set {_cm} to random integer between 1 to 10
+
+                    set {_item} to raw salmon with custom model data 1 named "&f물고기 &f[C급] &9판매 동전 지수: %{_cm} * 1%" with lore "&f평범한 물고기이다." and "&a길이: %{_cm}%cm"
+                
+                # B급
+                else if {_percentage} < 91:
+                    if {status::%uuid of player%::fishing} > 14:
+                        set {_cm} to random integer between 5 to 10
+                    else:
+                        set {_cm} to random integer between 1 to 10
+
+                    set {_item} to raw salmon with custom model data 2 named "&f물고기 &2[B급] &9판매 동전 지수: %{_cm} * 2%" with lore "&2조금은 큰 물고기이다." and "&a길이: %{_cm}%cm"
+
+                # A급
+                else if {_percentage} < 99:
+                    if {status::%uuid of player%::fishing} > 14:
+                        set {_cm} to random integer between 13 to 20
+                    else:
+                        set {_cm} to random integer between 5 to 20
+
+                    set {_item} to raw salmon with custom model data 3 named "&f물고기 &4[A급] &9판매 동전 지수: %{_cm} * 4%" with lore "&4희귀한 물고기이다." and "&a길이: %{_cm}%cm"
+                    send "%{S}% 축하드립니다! A급 물고기를 낚으셨습니다!!" to player
+
+                # S급
+                else:
+                    if {status::%uuid of player%::fishing} > 14:
+                        set {_cm} to random integer between 35 to 50
+                    else:
+                        set {_cm} to random integer between 20 to 50
+
+                    set {_item} to raw salmon with custom model data 4 named "&f물고기 &6[S급] &9판매 동전 지수: %{_cm} * 10%" with lore "&6매우 희귀한 물고기이다." and "&a길이: %{_cm}%cm"
+                    send "%{S}% 와우!! 축하드립니다. S급 물고기를 낚으셨습니다!!" to player
+
+            else:
+                # B급
+                if {_percentage} < 81:
+                    set {_cm} to random integer between 5 to 10
+                    set {_item} to raw salmon with custom model data 2 named "&f물고기 &2[B급] &9판매 동전 지수: %{_cm} * 2%" with lore "&2조금은 큰 물고기이다." and "&a길이: %{_cm}%cm"
+
+                # A급
+                else if {_percentage} < 96:
+                    set {_cm} to random integer between 13 to 20
+                    set {_item} to raw salmon with custom model data 3 named "&f물고기 &4[A급] &9판매 동전 지수: %{_cm} * 4%" with lore "&4희귀한 물고기이다." and "&a길이: %{_cm}%cm"
+                    send "%{S}% 축하드립니다! A급 물고기를 낚으셨습니다!!" to player
+
+                # S급
+                else if {_percentage} < 100:
+                    set {_cm} to random integer between 35 to 50
+                    set {_item} to raw salmon with custom model data 4 named "&f물고기 &6[S급] &9판매 동전 지수: %{_cm} * 10%" with lore "&6매우 희귀한 물고기이다." and "&a길이: %{_cm}%cm"
+                    send "%{S}% 와우!! 축하드립니다. S급 물고기를 낚으셨습니다!!" to player
+                # 보물
+                else:
+                    set {_cm} to random integer between 35 to 50
+                    set {_item} to raw salmon with custom model data 5 named "&f물고기 &e[보물] &9판매 동전 지수: %{_cm} * 20%" with lore "&e행운이 가득한 물고기이다." and "&a길이: %{_cm}%cm"
+                    broadcast "%{S}% %player%님이 보물 물고기를 획득하였습니다!!"
+                    add 1 to {style.fish.%uuid of player%}
+
+                    if {style.fish.%uuid of player%} > 9:
+                        AddStyle(player, "보물 등급의 물고기 10회 낚시 성공")
+
+            set item of fishing caught entity to {_item}

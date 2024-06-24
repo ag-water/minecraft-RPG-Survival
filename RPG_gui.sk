@@ -1,0 +1,1171 @@
+# 메인 화면 클릭
+on inventory click:
+    if event-inventory is {main_GUI}:
+        cancel event
+        if clicked slot is 10 or 13 or 16 or 19 or 22 or 25 or 28 or 31 or 34 or 37:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+
+        # 스탯 클릭
+        if clicked slot is 10:
+            set metadata tag "status" of player to chest inventory with 4 rows named "&e%player%&0님의 RPG 스탯"
+
+            loop 37 times:
+                set slot loop-number - 1 of metadata tag "status" of player to {space}
+            
+            set slot 10 of metadata tag "status" of player to skull of player named "&e%player% &6정보" with lore "&2경험 지수: &1%{xpgage.%uuid of player%}% &2/ 100" and "경험치: %player's level progress * 100%%%" and "&2공격력: %{attack.%uuid of player%}%" and "&2체력: %{hp.%uuid of player%}%" and "&2이동 속도: %{speed.%uuid of player%} * 10%" and "&6세이브권: &5%{invsave.%uuid of player%}%"
+            
+            set slot 13 of metadata tag "status" of player to paper with custom model data 42 named "&6칭호 진척도" with lore "&aE 획득 &e%{style.E.%uuid of player%}%" and "&a랜덤 박스 구매 &e%{style.randombox.%uuid of player%}%" and "&a인챈트 횟수 &e%{style.enforce.%uuid of player%}%"
+
+            set slot 16 of metadata tag "status" of player to paper with custom model data 43 named "&6%{E.%uuid of player%}%&e&lE"
+
+            set slot 19 of metadata tag "status" of player to paper with custom model data 29 named "&6광질 &f%{status::%uuid of player%::mining}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다."
+
+            set slot 21 of metadata tag "status" of player to paper with custom model data 30 named "&6농사 &f%{status::%uuid of player%::farming}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다."
+
+            set slot 23 of metadata tag "status" of player to paper with custom model data 31 named "&6낚시 &f%{status::%uuid of player%::fishing}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다."
+
+            set slot 25 of metadata tag "status" of player to paper with custom model data 32 named "&6사냥 &f%{status::%uuid of player%::hunting}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다."
+
+            set slot 31 of metadata tag "status" of player to {return}
+            
+            close player's inventory
+            open metadata tag "status" of player to player
+
+        # 거래소 클릭
+        if clicked slot is 13:
+            set metadata tag "store" of player to chest inventory with 6 rows named "&0거래소"
+
+            loop 19 times:
+                if loop-number > 9:
+                    set slot loop-number + 35 of metadata tag "store" of player to {space}
+                else:
+                    set slot loop-number - 1 of metadata tag "store" of player to {space}
+
+            set slot 45 of metadata tag "store" of player to {return}
+
+            set slot 53 of metadata tag "store" of player to paper with custom model data 25 named "&6판매하기" with lore "클릭하면 판매 가능한 올려둔 모든 아이템을 판매합니다."
+
+            close player's inventory
+            open metadata tag "store" of player to player
+
+        # 스크롤 조각 클릭
+        if clicked slot is 16:
+            if {E.%uuid of player%} > 2:
+                player has enough space for 1 of {scrollpiece}:
+                    give player 1 of {scrollpiece}
+                    remove 3 from {E.%uuid of player%}
+                    send "%{S}% 스크롤 조각을 구매하였습니다."
+                    SendE(player)
+                else:
+                    add 1 to {style.click.%uuid of player%}
+
+                    if {style.click.%uuid of player%} is 30:
+                        AddStyle(player, "메인 GUI에서 오류 메세지 30회 출력")
+                        
+                    send "%{W}% 인벤토리에 공간이 있는지 확인해주세요."
+            else:
+                add 1 to {style.click.%uuid of player%}
+
+                if {style.click.%uuid of player%} is 30:
+                    AddStyle(player, "메인 GUI에서 오류 메세지 30회 출력")
+
+                send "%{W}% 보유 중인 E가 부족합니다."
+
+        # 랜덤 클릭
+        if clicked slot is 19:
+            if {E.%uuid of player%} > 2:
+                player has enough space for 1 of {randombox}:
+                    give player 1 of {randombox}
+                    remove 3 from {E.%uuid of player%}
+                    send "%{S}% 랜덤 박스를 구매하였습니다."
+
+                    add 1 to {style.randombox.%uuid of player%}
+
+                    if {style.randombox.%uuid of player%} > 49:
+                        AddStyle(player, "랜덤 박스 50회 구매")
+
+                    else if {style.randombox.%uuid of player%} > 29:
+                        AddStyle(player, "랜덤 박스 30회 구매")
+
+                    else if {style.randombox.%uuid of player%} > 9:
+                        AddStyle(player, "랜덤 박스 10회 구매")
+
+                    else if {style.randombox.%uuid of player%} > 0:
+                        AddStyle(player, "랜덤 박스 1회 구매")
+                    
+                    SendE(player)
+                else:
+                    add 1 to {style.click.%uuid of player%}
+
+                    if {style.click.%uuid of player%} is 30:
+                        AddStyle(player, "메인 GUI에서 오류 메세지 30회 출력")
+
+                    send "%{W}% 인벤토리에 공간이 있는지 확인해주세요."
+            else:
+                add 1 to {style.click.%uuid of player%}
+
+                if {style.click.%uuid of player%} is 30:
+                    AddStyle(player, "메인 GUI에서 오류 메세지 30회 출력")
+
+                send "%{W}% 보유 중인 E가 부족합니다."
+
+        # 강화 클릭
+        if clicked slot is 22:
+            set metadata tag "enforce" of player to chest inventory with 4 rows named "&0강화"
+
+            loop 37 times:
+                set slot loop-number - 1 of metadata tag "enforce" of player to {space}
+
+            set slot 11 of metadata tag "enforce" of player to paper with custom model data 39 named "&6강화할 아이템" with lore "&a강화할 아이템을 올려주세요."
+
+            set slot 12 of metadata tag "enforce" of player to paper with custom model data 35 named " "
+
+            set slot 13 of metadata tag "enforce" of player to paper with custom model data 38 named "&6스크롤" with lore "&a부여할 스크롤을 올려주세요."
+
+            set slot 14 of metadata tag "enforce" of player to paper with custom model data 37 named " "
+
+            set slot 15 of metadata tag "enforce" of player to paper with custom model data 36 named "&6결과" with lore "&a클릭하면 아이템 강화를 시도합니다."
+
+            set slot 20 of metadata tag "enforce" of player to air
+
+            set slot 21 of metadata tag "enforce" of player to paper with custom model data 35 named " "
+
+            set slot 22 of metadata tag "enforce" of player to air
+
+            set slot 23 of metadata tag "enforce" of player to paper with custom model data 37 named " "
+
+            set slot 24 of metadata tag "enforce" of player to air
+
+            set slot 31 of metadata tag "enforce" of player to {return}
+
+            close player's inventory
+            open metadata tag "enforce" of player to player
+
+        # 제작 클릭
+        if clicked slot is 25:
+            if {status::%uuid of player%::hunting} > 14:
+                open crafting inventory to player
+            else:
+                add 1 to {style.click.%uuid of player%}
+
+                if {style.click.%uuid of player%} is 30:
+                    AddStyle(player, "메인 GUI에서 오류 메세지 30회 출력")
+                    
+                send "%{W}% 사냥 스탯 15레벨 이하는 제작을 사용할 수 없습니다."
+        
+        # 창고 클릭
+        if clicked slot is 28:
+            set metadata tag "inv" of player to chest inventory with 1 rows named "&e%player%&0님의 창고"
+
+            set slot 0 of metadata tag "inv" of player to {return}
+
+            loop {inv::%uuid of player%::*}:
+                set {_slot} to loop-index parsed as integer
+                set slot {_slot} of metadata tag "inv" of player to loop-value
+
+            delete {inv::%uuid of player%::*}
+
+            open metadata tag "inv" of player to player
+        
+        # 쓰레기통 클릭
+        if clicked slot is 31:
+            set metadata tag "trash" of player to chest inventory with 6 rows named "&0쓰레기통"
+
+            loop 19 times:
+                if loop-number > 9:
+                    set slot loop-number + 35 of metadata tag "trash" of player to {space}
+                else:
+                    set slot loop-number - 1 of metadata tag "trash" of player to {space}
+
+            set slot 49 of metadata tag "trash" of player to {return}
+
+            open metadata tag "trash" of player to player
+
+        # 칭호 클릭
+        if clicked slot is 34:
+            make player run cmd "/style" as op
+
+            close player's inventory
+
+        # 도감 클릭
+        if clicked slot is 37:
+            set {_count} to 0
+            set {_GUIcount} to 0
+            loop {collection.%uuid of player%::*}:
+                add 1 to {_count}
+            
+            while {_count} > -1:
+                set metadata tag "collection%{_GUIcount} + 1%" of player to chest inventory with 4 rows named "&0도감 %{_GUIcount} + 1%page"
+
+                loop 37 times:
+                    set slot loop-value - 1 of metadata tag "collection%{_GUIcount} + 1%" of player to {space}
+
+                loop 18 times:
+                    set {_slot} to {_GUIcount} * 18
+                    if {collection.%uuid of player%::%{_slot} + loop-value%} is set:
+                        set slot loop-value + 8 of metadata tag "collection%{_GUIcount} + 1%" of player to {collection.%uuid of player%::%{_slot} + loop-value%}
+                
+                set slot 27 of metadata tag "collection%{_GUIcount} + 1%" of player to paper with custom model data 27 named "&c뒤로 가기" with lore "&a클릭하면 이전 화면으로 이동합니다."
+
+                set slot 35 of metadata tag "collection%{_GUIcount} + 1%" of player to arrow named "&2다음 페이지" with lore "&a클릭하면 다음 도감 화면로 넘어갑니다."
+
+                add 1 to {_GUIcount}
+                remove 18 from {_count}
+
+            close player's inventory
+            open metadata tag "collection1" of player to player
+
+# 플레이어 상태창 화면 클릭
+on inventory click:
+    if MetaDataCompare(metadata tag "status" of player, event-inventory) = true:
+        cancel event
+        if clicked slot is 19 or 21 or 23 or 25 or 31:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+
+        # 광질 클릭
+        if clicked slot is 19:
+            if {status::%uuid of player%::mining} > 20:
+                if {E.%uuid of player%} > 2:
+                    if StatusIncrease(player, "mining") is true:
+                        remove 3 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::mining} is 30:
+                            send "%{S}% 이제 &4대장장이 작업대를 사용&2할 수 있습니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 3&c&lE&c가 필요합니다."
+
+            else if {status::%uuid of player%::mining} > 10:
+                if {E.%uuid of player%} > 1:
+                    if StatusIncrease(player, "mining") is true:
+                        remove 2 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::mining} is 15:
+                            send "%{S}% 이제 &4광물을 캐면 일정 확률로 동전, 은전, 금전이 드랍&2됩니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 2&c&lE&c가 필요합니다."
+            else:
+                if {E.%uuid of player%} > 0:
+                    if StatusIncrease(player, "mining") is true:
+                        remove 1 from {E.%uuid of player%}
+                        SendE(player)
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 1&c&lE&c가 필요합니다."
+                    
+
+        # 농사 클릭
+        if clicked slot is 21:
+            if {status::%uuid of player%::farming} > 20:
+                if {E.%uuid of player%} > 2:
+                    if StatusIncrease(player, "farming") is true:
+                        remove 3 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::farming} is 30:
+                            send "%{S}% 이제 &4농작물을 캐고난 후 작물의 씨앗이 있다면 자동&2으로 심어집니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 3&c&lE&c가 필요합니다."
+
+            else if {status::%uuid of player%::farming} > 10:
+                if {E.%uuid of player%} > 1:
+                    if StatusIncrease(player, "farming") is true:
+                        remove 2 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::farming} is 15:
+                            send "%{S}% 이제 &4땅을 갈 때 일정 확률로 동전, 은전이 드랍&2됩니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 2&c&lE&c가 필요합니다."
+            else:
+                if {E.%uuid of player%} > 0:
+                    if StatusIncrease(player, "farming") is true:
+                        remove 1 from {E.%uuid of player%}
+                        SendE(player)
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 1&c&lE&c가 필요합니다."
+
+        # 낚시 클릭
+        if clicked slot is 23:
+            if {status::%uuid of player%::fishing} > 20:
+                if {E.%uuid of player%} > 2:
+                    if StatusIncrease(player, "fishing") is true:
+                        remove 3 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::fishing} is 30:
+                            send "%{S}% 이제 &4더 이상 C급 물고기가 낚이지 않고, 보물 등급의 물고기&2를 낚을 수 있습니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 3&c&lE&c가 필요합니다."
+
+            else if {status::%uuid of player%::fishing} > 10:
+                if {E.%uuid of player%} > 1:
+                    if StatusIncrease(player, "fishing") is true:
+                        remove 2 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::fishing} is 15:
+                            send "%{S}% 이제 &4낚시 성공 시 얻는 모든 물고기의 길이가 평균 이상&2이 됩니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 2&c&lE&c가 필요합니다."
+                    
+            else:
+                if {E.%uuid of player%} > 0:
+                    if StatusIncrease(player, "fishing") is true:
+                        remove 1 from {E.%uuid of player%}
+                        SendE(player)
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 1&c&lE&c가 필요합니다."
+
+        # 사냥 클릭
+        if clicked slot is 25:
+            if {status::%uuid of player%::hunting} > 20:
+                if {E.%uuid of player%} > 2:
+                    if StatusIncrease(player, "hunting") is true:
+                        remove 3 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::hunting} is 30:
+                            add 2 to {attack.%uuid of player%}
+
+                            make player run cmd "/attribute %player% minecraft:generic.attack_damage base set %{attack.%uuid of player%}%" as op
+
+                            set slot 10 of metadata tag "status" of player to skull of player named "&e%player% &6정보" with lore "&2경험 지수: &1%{xpgage.%uuid of player%}% &2/ 100" and "경험치: %player's level progress * 100%%%" and "&2공격력: %{attack.%uuid of player%}%" and "&2체력: %{hp.%uuid of player%}%" and "&2이동 속도: %{speed.%uuid of player%} * 10%" and "&6세이브권: &5%{invsave.%uuid of player%}%"
+                            
+                            send "%{S}% 이제 &4영구적으로 공격력이 2증가&2합니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 3&c&lE&c가 필요합니다."
+            else if {status::%uuid of player%::hunting} > 10:
+                if {E.%uuid of player%} > 1:
+                    if StatusIncrease(player, "hunting") is true:
+                        remove 2 from {E.%uuid of player%}
+                        SendE(player)
+
+                        if {status::%uuid of player%::hunting} is 15:
+                            send "%{S}% 이제 &4몬스터를 잡을 때 일정 확률로 동전, 은전, 금전이 드랍&2됩니다."
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 2&c&lE&c가 필요합니다."
+            else:
+                if {E.%uuid of player%} > 0:
+                    if StatusIncrease(player, "hunting") is true:
+                        remove 1 from {E.%uuid of player%}
+                        SendE(player)
+                else:
+                    send "%{W}% RPG 스탯을 올리는데 1&c&lE&c가 필요합니다."
+
+        # 뒤로 가기 클릭
+        if clicked slot is 31:
+            close player's inventory
+            open {main_GUI} to player
+
+        # 슬롯 재설정
+        set slot 16 of metadata tag "status" of player to paper with custom model data 43 named "&6%{E.%uuid of player%}%&e&lE"
+        set slot 19 of metadata tag "status" of player to paper with custom model data 29 named "&6광질 &f%{status::%uuid of player%::mining}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다."
+        set slot 21 of metadata tag "status" of player to paper with custom model data 30 named "&6농사 &f%{status::%uuid of player%::farming}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다."
+        set slot 23 of metadata tag "status" of player to paper with custom model data 31 named "&6낚시 &f%{status::%uuid of player%::fishing}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다."
+        set slot 25 of metadata tag "status" of player to paper with custom model data 32 named "&6사냥 &f%{status::%uuid of player%::hunting}%&aP" with lore "현재 남은 스탯 &c%{status::%uuid of player%::point}%" and "&a클릭 시 스탯을 올립니다." 
+
+# 판매소 클릭
+on inventory click:
+    if MetaDataCompare(metadata tag "store" of player, event-inventory) = true:
+        if clicked slot < 9:
+            cancel event
+        if clicked slot > 44:
+            cancel event
+
+        if clicked slot is 45 or 53:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+        
+        # 뒤로가기 클릭
+        if clicked slot is 45:
+            close player's inventory
+            open {main_GUI} to player
+
+        # 판매하기 클릭
+        if clicked slot is 53:
+            set {_xpgage} to 0
+            set {_E} to 0
+            loop all items in metadata tag "store" of player:
+                if loop-slot is not 0, 1, 2, 3, 4, 5, 6, 7, 8, 45, 46, 47, 48, 49, 50, 51, 52 or 53:
+                    set {_item1} to 1 of loop-item
+                    set {_amount} to item amount of loop-item
+                    set {_bonus} to 1
+                    
+                    # 동전
+                    if {_item1} is {coin::1}:
+                        add {_amount} to {_E}
+                        delete loop-slot
+                        continue
+                    # 은전
+                    if {_item1} is {coin::2}:
+                        add 10 * {_amount} to {_E}
+                        delete loop-slot
+                        continue
+                    # 금전
+                    if {_item1} is {coin::3}:
+                        add 100 * {_amount} to {_E}
+                        delete loop-slot
+                        continue
+
+                    # 물고기
+                    if name of {_item1} contains "&f물고기":
+                        set {_bonus} to {_bonus} + {status::%uuid of player%::fishing} / 100
+
+                        set {_price} to uncolored name of {_item1}
+                        
+                        replace all " " and "물고기" and "[C급]" and "[B급]" and "[A급]" and "[S급]" and "[보물]" and "판매동전지수:" with "" in {_price}
+                        
+                        set {_price} to {_price} parsed as integer
+
+                        add {_price} * {_amount} * {_bonus} to {_xpgage}
+
+                        delete loop-slot
+                        continue
+            
+                    # 광물
+                    loop {sell::ore::*}:
+                        set {_item2} to loop-index parsed as item
+                        if {_item1} is {_item2}:
+                            set {_bonus} to {_bonus} + {status::%uuid of player%::mining} / 100
+
+                            add loop-value-2 * {_amount} * {_bonus} to {_xpgage}
+                            delete loop-slot
+
+                            # 고대잔해 칭호
+                            if {_item2} is ancient debris:
+                                add {_amount} to {style.ancient.%uuid of player%}
+
+                                if {style.ancient.%uuid of player%} > 29:
+                                    AddStyle(player, "고대 잔해 30회 판매")
+
+                            exit 1 loop
+
+                    #농사
+                    loop {sell::crops::*}:
+                        set {_item2} to loop-index parsed as item
+                        if {_item1} is {_item2}:
+                            set {_bonus} to {_bonus} + {status::%uuid of player%::farming} / 100
+
+                            add loop-value-2 * {_amount} * {_bonus} to {_xpgage}
+                            delete loop-slot
+
+                            # 케이크 칭호
+                            if {_item2} is cake:
+                                add {_amount} to {style.cake.%uuid of player%}
+
+                                if {style.cake.%uuid of player%} > 29:
+                                    AddStyle(player, "케이크 30회 판매")
+
+                            exit 1 loop
+
+                    #전리품
+                    loop {sell::loot::*}:
+                        set {_item2} to loop-index parsed as item
+                        if {_item1} is {_item2}:
+                            set {_bonus} to {_bonus} + {status::%uuid of player%::hunting} / 100
+
+                            add loop-value-2 * {_amount} * {_bonus} to {_xpgage}
+                            delete loop-slot
+
+                            exit 1 loop
+
+            # 판매할 수 없는 아이템 출력 및 이벤트 취소
+            loop all items in metadata tag "store" of player:
+                if loop-slot is not 0, 1, 2, 3, 4, 5, 6, 7, 8, 45, 46, 47, 48, 49, 50, 51, 52 or 53:
+                    if loop-item is not air:
+                        if name of loop-item is set:
+                            add name of loop-item to {_cancel::*}
+                        else:
+                            add 1 of loop-item to {_cancel::*}
+
+            # 아이템 확인이 끝난 후 동전 및 경험치 지급
+            set {_xp} to 0
+            add {_xpgage} to {xpgage.%uuid of player%}
+
+            while {xpgage.%uuid of player%} > 99:
+                remove 100 from {xpgage.%uuid of player% }
+                add 5 to {_xp}
+                add 1 to {_E}
+
+            if {_xpgage} is not 0:
+                send "%{S}% 아이템을 판매하여 &1%{_xpgage}%&2만큼의 경험 지수를 획득하였습니다."
+            
+            if {_xp} is not 0:
+                send "%{S}% &e%{_xp}%&2만큼의 경험치를 획득하였습니다."
+
+                make player run cmd "/xp add %player% %{_xp}%" as op
+                
+            if {_E} is not 0:
+                send "%{S}% &4%{_E}%&eE&2를 획득하였습니다."
+
+                add {_E} to {E.%uuid of player%}
+                add {_E} to {style.E.%uuid of player%}
+
+                if {style.coin.%uuid of player%} > 499:
+                    AddStyle(player, "500E 획득")
+
+                if {style.coin.%uuid of player%} > 99:
+                    AddStyle(player, "100E 획득")
+
+                if {style.coin.%uuid of player%} > 99:
+                    AddStyle(player, "50E 획득")
+
+                if {style.coin.%uuid of player%} > 0:
+                    AddStyle(player, "1E 획득")
+                            
+                
+            close player's inventory
+                
+            loop {_cancel::*}:
+                send "%{W}% 판매 불가 아이템 - %loop-value%"
+
+# 강화 클릭
+on inventory click:
+    if MetaDataCompare(metadata tag "enforce" of player, event-inventory) = true:
+        if clicked slot is not 20 or 22 or 24 or 31:
+            cancel event
+
+        # 뒤로 가기 클릭
+        if clicked slot is 31:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+            close player's inventory
+            open {main_GUI} to player
+
+        # 강화 클릭
+        if clicked slot is 15:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+            set {_item} to slot 20 of metadata tag "enforce" of player
+            
+            # 장비(도구)별로 고유 인챈트 부여
+            if {_item} is any shovel:
+                set {_percentage} to random integer between 1 to 2
+
+                if {_percentage} is 1:
+                    add "Silk Touch:1" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fortune:3" to {_enchant::*}
+
+                add "Unbreaking:3" to {_enchant::*}
+                add "Efficiency:5" to {_enchant::*}
+
+            else if {_item} is any pickaxe:
+                set {_percentage} to random integer between 1 to 2
+
+                if {_percentage} is 1:
+                    add "Silk Touch:1" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fortune:3" to {_enchant::*}
+
+                add "Unbreaking:3" to {_enchant::*}
+                add "Efficiency:5" to {_enchant::*}
+
+            else if {_item} is any axe:
+                set {_percentage} to random integer between 1 to 2
+
+                if {_percentage} is 1:
+                    add "Silk Touch:1" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fortune:3" to {_enchant::*}
+                
+                set {_percentage} to random integer between 1 to 3
+
+                if {_percentage} is 1:
+                    add "Smite:5" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Sharpness:5" to {_enchant::*}
+                else if {_percentage} is 3:
+                    add "Bane Of Arthropods:5" to {_enchant::*}
+
+                add "Unbreaking:3" to {_enchant::*}
+                add "Efficiency:5" to {_enchant::*}
+                
+
+            else if {_item} is any hoe:
+                set {_percentage} to random integer between 1 to 2
+
+                if {_percentage} is 1:
+                    add "Silk Touch:1" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fortune:3" to {_enchant::*}
+                
+                add "Unbreaking:3" to {_enchant::*}
+                add "Efficiency:5" to {_enchant::*}
+
+            else if {_item} is any sword:
+                set {_percentage} to random integer between 1 to 3
+
+                if {_percentage} is 1:
+                    add "Smite:5" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Sharpness:5" to {_enchant::*}
+                else if {_percentage} is 3:
+                    add "Bane Of Arthropods:5" to {_enchant::*}
+
+                add "Looting:3" to {_enchant::*}
+                add "Sweeping Edge:3" to {_enchant::*}
+                add "Unbreaking:3" to {_enchant::*}
+                add "Fire Aspect:2" to {_enchant::*}
+                add "Knockback:2" to {_enchant::*}
+
+            else if {_item} is any helmet:
+                set {_percentage} to random integer between 1 to 4
+                
+                if {_percentage} is 1:
+                    add "Protection:4" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fire Protection:4" to {_enchant::*}
+                else if {_percentage} is 3:
+                    add "Blast Protection:4" to {_enchant::*}
+                else if {_percentage} is 4:
+                    add "Projectile Protection:4" to {_enchant::*}
+                
+                add "Aqua Affinity:1" to {_enchant::*}
+                add "Thorns:3" to {_enchant::*}
+                add "Respiration:3" to {_enchant::*}
+                add "Unbreaking:3" to {_enchant::*}
+
+            else if {_item} is any chestplate:
+                set {_percentage} to random integer between 1 to 4
+
+                if {_percentage} is 1:
+                    add "Protection:4" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fire Protection:4" to {_enchant::*}
+                else if {_percentage} is 3:
+                    add "Blast Protection:4" to {_enchant::*}
+                else if {_percentage} is 4:
+                    add "Projectile Protection:4" to {_enchant::*}
+
+                add "Unbreaking:3" to {_enchant::*}
+                add "Thorns:3" to {_enchant::*}
+
+            else if {_item} is any leggings:
+                set {_percentage} to random integer between 1 to 4
+                
+                if {_percentage} is 1:
+                    add "Protection:4" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fire Protection:4" to {_enchant::*}
+                else if {_percentage} is 3:
+                    add "Blast Protection:4" to {_enchant::*}
+                else if {_percentage} is 4:
+                    add "Projectile Protection:4" to {_enchant::*}
+
+                add "Unbreaking:3" to {_enchant::*}
+                add "Thorns:3" to {_enchant::*}
+                add "Swift Sneak:3" to {_enchant::*}
+
+            else if {_item} is any boots:
+                set {_percentage} to random integer between 1 to 2
+
+                if {_percentage} is 1:
+                    add "Frost Walker:2" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Depth Strider:3" to {_enchant::*}
+
+                set {_percentage} to random integer between 1 to 4
+                
+                if {_percentage} is 1:
+                    add "Protection:4" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Fire Protection:4" to {_enchant::*}
+                else if {_percentage} is 3:
+                    add "Blast Protection:4" to {_enchant::*}
+                else if {_percentage} is 4:
+                    add "Projectile Protection:4" to {_enchant::*}
+
+                add "Thorns:3" to {_enchant::*}
+                add "Soul Speed:3" to {_enchant::*}
+                add "Feather Falling:4" to {_enchant::*}
+                add "Unbreaking:3" to {_enchant::*}
+
+            else if {_item} is bow:
+                add "Power:5" to {_enchant::*}
+                add "Infinity:1" to {_enchant::*}
+                add "Unbreaking:3" to {_enchant::*}
+                add "Flame:1" to {_enchant::*}
+                add "Punch:2" to {_enchant::*}
+
+            else if {_item} is crossbow:
+                set {_percentage} to random integer between 1 to 2
+
+                if {_percentage} is 1:
+                    add "Multishot:1" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Piercing:4" to {_enchant::*}
+                
+                add "Quick Charge:3" to {_enchant::*}
+                add "Unbreaking:3" to {_enchant::*}
+
+            else if {_item} is fishing rod:
+                add "Lure:3" to {_enchant::*}
+                add "Unbreaking:3" to {_enchant::*}
+                add "Luck Of The Sea:3" to {_enchant::*}
+
+            else if {_item} is trident:
+                set {_percentage} to random integer between 1 to 2
+
+                if {_percentage} is 1:
+                    add "Riptide:3" to {_enchant::*}
+                else if {_percentage} is 2:
+                    add "Channeling:1" to {_enchant::*}
+                    add "Loyalty:3" to {_enchant::*}
+
+                add "Impaling:5" to {_enchant::*}
+                add "Unbreaking:3" to {_enchant::*}
+            else:
+                send "%{W}% 올바른 장비(도구) 아이템을 넣어주세요." to player
+                exit
+
+            set {_scroll} to slot 22 of metadata tag "enforce" of player
+            if name of {_scroll} contains "&2[부여]" or "&2[수리]":
+                if slot 24 of metadata tag "enforce" of player is air:
+                    if name of {_scroll} contains "&2[부여]":
+                        loop {_enchant::*}:
+                            set {_data::*} to split loop-value at ":"
+                            set {_enchantType} to {_data::1}
+                            set {_maxLevel} to {_data::2} parsed as integer
+
+                            set {_percentage} to random integer between 0 and 100
+                            set {_level} to 0
+                            
+                            # 단일 인챈트
+                            if {_maxLevel} is 1:
+                                if {_percentage} > 30:
+                                    set {_level} to 0
+                                else:
+                                    set {_level} to 1
+                                
+                            # 최대 2 인챈트
+                            else if {_maxLevel} is 2:
+                                if {_percentage} > 50:
+                                    set {_level} to 0
+                                else if {_percentage} > 20:
+                                    set {_level} to 1
+                                else:
+                                    set {_level} to 2
+
+                            # 최대 3 인챈트
+                            else if {_maxLevel} is 3:
+                                if {_percentage} > 50:
+                                    set {_level} to 0
+                                else if {_percentage} > 20:
+                                    set {_level} to 1
+                                else if {_percentage} > 5:
+                                    set {_level} to 2
+                                else:
+                                    set {_level} to 3
+
+                            # 최대 4 인챈트
+                            else if {_maxLevel} is 4:
+                                if {_percentage} > 70:
+                                    set {_level} to 0
+                                else if {_percentage} > 40:
+                                    set {_level} to 1
+                                else if {_percentage} > 20:
+                                    set {_level} to 2
+                                else if {_percentage} > 7:
+                                    set {_level} to 3
+                                else:
+                                    set {_level} to 4
+
+                            # 최대 5 인챈트
+                            else if {_maxLevel} is 5:
+                                if {_percentage} > 70:
+                                    set {_level} to 0
+                                else if {_percentage} > 40:
+                                    set {_level} to 1
+                                else if {_percentage} > 20:
+                                    set {_level} to 2
+                                else if {_percentage} > 10:
+                                    set {_level} to 3
+                                else if {_percentage} > 3:
+                                    set {_level} to 4
+                                else:
+                                    set {_level} to 5
+
+                            if {_level} is not 0:
+                                add "%{_enchantType}% %{_level}%" parsed as enchanting type to {_enchanting::*}
+
+                        disenchant {_item}
+
+                        loop {_enchanting::*}:
+                            enchant {_item} with loop-value
+
+                        if slot 20 of metadata tag "enforce" of player is wooden hoe:
+                            AddStyle(player, "나무 괭이에 인챈트 부여")
+
+                        play sound "block.enchantment_table.use" with volume 1.5 and pitch 1
+                        send "%{S}% 인챈트를 성공적으로 부여했습니다." to player
+
+                        remove 1 of slot 20 of metadata tag "enforce" of player from slot 20 of metadata tag "enforce" of player
+                        remove 1 of slot 22 of metadata tag "enforce" of player from slot 22 of metadata tag "enforce" of player
+                        set slot 24 of metadata tag "enforce" of player to {_item}
+
+                        add 1 to {style.enforce.%uuid of player%}
+
+                        if {style.enforce.%uuid of player%} > 999:
+                            AddStyle(player, "인챈트 1000회 부여")
+
+                        else if {style.enforce.%uuid of player%} > 49:
+                            AddStyle(player, "인챈트 50회 부여")
+
+                        else if {style.enforce.%uuid of player%} > 9:
+                            AddStyle(player, "인챈트 10회 부여")
+
+                        else if {style.enforce.%uuid of player%} > 4:
+                            AddStyle(player, "인챈트 5회 부여")
+
+                        else if {style.enforce.%uuid of player%} > 0:
+                            AddStyle(player, "인챈트 1회 부여")
+
+                    else if name of {_scroll} contains "&2[수리]":
+                        set {_durability} to round max durability of slot 20 of metadata tag "enforce" of player * 0.1
+
+                        if max durability of slot 20 of metadata tag "enforce" of player - durability of slot 20 of metadata tag "enforce" of player >= {_durability}:
+                            set {_item} to durability of slot 20 of metadata tag "enforce" of player
+
+                            add {_durability} to {_item}
+                            
+                            set durability of slot 20 of metadata tag "enforce" of player to {_item}
+
+                            set {_item} to slot 20 of metadata tag "enforce" of player
+                            
+                            play sound "block.anvil.use" with volume 0.5 and pitch 1
+                            remove 1 of slot 20 of metadata tag "enforce" of player from slot 20 of metadata tag "enforce" of player
+                            remove 1 of slot 22 of metadata tag "enforce" of player from slot 22 of metadata tag "enforce" of player
+                            set slot 24 of metadata tag "enforce" of player to {_item}
+                            
+                            send "%{S}% 성공적으로 수리를 완료했습니다."
+                        else:
+                            send "%{W}% 내구도가 충분하여 수리를 할 수 없습니다."
+                else:
+                    send "%{W}% 결과칸에 아이템이 존재합니다." to player
+                    exit
+            else:
+                send "%{W}% 인챈트 스크롤 혹은 수리 스크롤을 넣어주세요." to player
+                exit
+
+# 창고 클릭
+on inventory click:
+    if MetaDataCompare(metadata tag "inv" of player, event-inventory) = true:
+        if clicked slot is paper with custom model data 26 or {return}:
+            cancel event
+        
+        # 뒤로 가기 클릭
+        if clicked slot is 0:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+            close player's inventory
+            open {main_GUI} to player
+
+# 쓰레기통 클릭
+on inventory click:
+    if MetaDataCompare(metadata tag "trash" of player, event-inventory) = true:
+        if clicked slot < 9:
+            cancel event
+        if clicked slot > 44:
+            cancel event
+        
+        # 뒤로 가기 클릭
+        if clicked slot is 49:
+            play sound "UI_BUTTON_CLICK" with volume 0.8
+            close player's inventory
+            open {main_GUI} to player
+
+# 도감 클릭
+on inventory click:
+    if name of event-inventory contains "&0도감":
+        if event-inventory is open inventory:
+            cancel event
+
+            if clicked slot is 27 or 35:
+                play sound "UI_BUTTON_CLICK" with volume 0.8
+
+            set {_page} to uncolored name of event-inventory
+
+            replace all " " and "도감" and "page" with "" in {_page}
+
+            set {_page} to {_page} parsed as integer
+
+            # 뒤로 가기 클릭
+            if clicked slot is 27:
+                close player's inventory
+                if {_page} > 1:
+                    open metadata tag "collection%{_page} - 1%" of player to player
+                else:
+                    open {main_GUI} to player
+
+            # 다음 페이지 클릭
+            if clicked slot is 35:
+                if metadata tag "collection%{_page} + 1%" of player is set:
+                    close player's inventory
+                    open metadata tag "collection%{_page} + 1%" of player to player
+                else:
+                    send "%{W}% 마지막 페이지 입니다."
+
+# 교환 요청 화면 클릭
+on inventory click:
+    if name of event-inventory contains "교환할 아이템":
+        if event-inventory is open inventory:
+            set {_player} to uncolored name of event-inventory
+            replace all " " and "님과교환할아이템" with "" in {_player}
+            set {_player} to {_player} parsed as player
+
+            if clicked slot > 8:
+                cancel event
+
+            if clicked slot is 9 or 17:
+                play sound "UI_BUTTON_CLICK" with volume 0.8
+
+            # 상대방의 교환 목록을 확인
+            if player is {_player}:
+                cancel event
+                set {_player} to uncolored name of slot 13 of open inventory parsed as player
+
+                # 수락 클릭
+                if clicked slot is 9:
+                    set {check.trade.%uuid of player%} to 1
+
+                    delete {trade.cancel.%uuid of player%}
+
+                    close player's inventory
+
+                    if {check.trade.%uuid of {_player}%} is not set:
+                        send "%{S}% 상대방이 교환 승낙을 결정하고 있습니다."
+                    else:
+                        loop 9 times:
+                            set {_slot} to slot loop-number - 1 of metadata tag "trade" of player
+                            if {_slot} is not {space}:
+                                add slot loop-number - 1 of metadata tag "trade" of player to {_item::*}
+
+                            set {_slot} to slot loop-number - 1 of metadata tag "trade" of {_player}
+                            if {_slot} is not {space}:
+                                add slot loop-number - 1 of metadata tag "trade" of {_player} to {_item2::*}
+
+                        # 아이템을 안 올릴 경우 air로 설정
+                        if {_item::*} is not set:
+                            set {_item::*} to air
+                        if {_item2::*} is not set:
+                            set {_item2::*} to air
+
+                        player has enough space for {_item2::*}:
+                            {_player} has enough space for {_item::*}:
+                                loop {_item2::*}:
+                                    give player loop-value
+                                
+                                loop {_item::*}:
+                                    give {_player} loop-value
+
+                                delete {check.trade.%uuid of player%}
+                                delete {check.trade.%uuid of {_player}%}
+
+                                delete {trade.cancel.%uuid of player%}
+                                delete {trade.cancel.%uuid of {_player}%}
+
+                                delete {trade.%uuid of player%}
+                                delete {trade.%uuid of {_player}%}
+
+                                delete metadata tag "trade" of player
+                                delete metadata tag "trade" of {_player}
+
+                                add 1 to {style.trade.%uuid of player%}
+                                add 1 to {style.trade.%uuid of {_player}%}
+                                
+                                if {style.trade.%uuid of player%} is 50:
+                                    AddStyle(player, "거래 50회 달성")
+                                if {style.trade.%uuid of {_player}%} is 50:
+                                    AddStyle({_player}, "거래 50회 달성")
+
+                                send "%{S}% 거래를 성공적으로 완료했습니다."
+                                send "%{S}% 거래를 성공적으로 완료했습니다." to {_player}
+                            else:
+                                loop {_item::*}:
+                                    give player loop-value
+                                
+                                loop {_item2::*}:
+                                    give {_player} loop-value
+
+                                delete {check.trade.%uuid of player%}
+                                delete {check.trade.%uuid of {_player}%}
+
+                                delete {trade.cancel.%uuid of player%}
+                                delete {trade.cancel.%uuid of {_player}%}
+
+                                delete {trade.%uuid of player%}
+                                delete {trade.%uuid of {_player}%}
+
+                                delete metadata tag "trade" of player
+                                delete metadata tag "trade" of {_player}
+
+                                send "%{W}% &e%{_player}%&c님의 인벤토리에 공간이 부족합니다."
+                                send "%{W}% &e%{_player}%&c님의 인벤토리에 공간이 부족합니다." to {_player}
+                                
+                        else:
+                            loop {_item::*}:
+                                give player loop-value
+                            
+                            loop {_item2::*}:
+                                give {_player} loop-value
+
+                            delete {check.trade.%uuid of player%}
+                            delete {check.trade.%uuid of {_player}%}
+
+                            delete {trade.cancel.%uuid of player%}
+                            delete {trade.cancel.%uuid of {_player}%}
+
+                            delete {trade.%uuid of player%}
+                            delete {trade.%uuid of {_player}%}
+
+                            delete metadata tag "trade" of player
+                            delete metadata tag "trade" of {_player}
+
+                            send "%{W}% &e%player%&c님의 인벤토리에 공간이 부족합니다."
+                            send "%{W}% &e%player%&c님의 인벤토리에 공간이 부족합니다." to {_player}
+
+                # 거절 클릭
+                if clicked slot is 17:
+                    loop 9 times:
+                        set {_slot} to slot loop-number - 1 of metadata tag "trade" of player
+                        if {_slot} is not {space}:
+                            add slot loop-number - 1 of metadata tag "trade" of player to {_item::*}
+
+                        set {_slot} to slot loop-number - 1 of metadata tag "trade" of {_player}
+                        if {_slot} is not {space}:
+                            add slot loop-number - 1 of metadata tag "trade" of {_player} to {_item2::*}
+
+                    loop {_item::*}:
+                        give player loop-value
+                    
+                    loop {_item2::*}:
+                        give {_player} loop-value
+                    
+                    # 상대방 인벤토리를 닫음
+                    if {check.trade.%uuid of {_player}%} is not set:
+                        close {_player}'s inventory
+
+                    close player's inventory
+
+                    delete {check.trade.%uuid of player%}
+                    delete {check.trade.%uuid of {_player}%}
+
+                    delete {trade.cancel.%uuid of player%}
+                    delete {trade.cancel.%uuid of {_player}%}
+
+                    delete {trade.%uuid of player%}
+                    delete {trade.%uuid of {_player}%}
+
+                    delete metadata tag "trade" of player
+                    delete metadata tag "trade" of {_player}
+
+                    send "%{W}% 교환이 취소되었습니다." to player
+                    send "%{W}% 교환이 취소되었습니다." to {_player}
+
+            # 플레이어의 교환 목록을 갱신
+            else:
+                # 수락 클릭
+                if clicked slot is 9:
+                    set {check.trade.%uuid of player%} to 1
+
+                    delete {trade.cancel.%uuid of player%}
+
+                    close player's inventory
+
+                    if {check.trade.%uuid of {_player}%} is set:
+                        loop 9 times:
+                            set {_air} to slot loop-number - 1 of metadata tag "trade" of {_player}
+                            if {_air} is air:
+                                set slot loop-number - 1 of metadata tag "trade" of {_player} to {space}
+
+                            set {_air} to slot loop-number - 1 of metadata tag "trade" of player
+                            if {_air} is air:
+                                set slot loop-number - 1 of metadata tag "trade" of player to {space}
+                            
+                        set {trade.cancel.%uuid of player%} to {_player}
+                        set {trade.cancel.%uuid of {_player}%} to player
+
+                        open metadata tag "trade" of {_player} to player
+                        open metadata tag "trade" of player to {_player}
+
+                        delete {check.trade.%uuid of player%}
+                        delete {check.trade.%uuid of {_player}%}
+
+                    else:
+                        send "%{S}% 상대방이 교환 물품을 설정하고 있습니다."
+
+                # 거절 클릭
+                if clicked slot is 17:
+                    loop 9 times:
+                        set {_slot} to slot loop-number - 1 of metadata tag "trade" of player
+                        if {_slot} is not {space}:
+                            add slot loop-number - 1 of metadata tag "trade" of player to {_item::*}
+
+                        set {_slot} to slot loop-number - 1 of metadata tag "trade" of {_player}
+                        if {_slot} is not {space}:
+                            add slot loop-number - 1 of metadata tag "trade" of {_player} to {_item2::*}
+
+                    loop {_item::*}:
+                        give player loop-value
+                    
+                    loop {_item2::*}:
+                        give {_player} loop-value
+                    
+                    # 상대방 인벤토리를 닫음
+                    if {check.trade.%uuid of {_player}%} is not set:
+                        close {_player}'s inventory
+
+                    close player's inventory
+
+                    delete {check.trade.%uuid of player%}
+                    delete {check.trade.%uuid of {_player}%}
+
+                    delete {trade.cancel.%uuid of player%}
+                    delete {trade.cancel.%uuid of {_player}%}
+
+                    delete {trade.%uuid of player%}
+                    delete {trade.%uuid of {_player}%}
+
+                    delete metadata tag "trade" of player
+                    delete metadata tag "trade" of {_player}
+
+                    send "%{W}% 교환이 취소되었습니다." to player
+                    send "%{W}% 교환이 취소되었습니다." to {_player}
+
+# 교환 화면을 도중에 끄면 화면이 닫히지 않게
+on inventory close:
+    if name of event-inventory contains "교환할 아이템":
+        set {_player} to uncolored name of event-inventory
+        replace all " " and "님과교환할아이템" with "" in {_player}
+        set {_player} to {_player} parsed as player
+
+        if {trade.cancel.%uuid of player%} is set:
+            # 교확 승낙 화면에서 닫음
+            if player is {_player}:
+                set {_player} to uncolored name of slot 13 of open inventory parsed as player
+                wait 2 tick
+                open metadata tag "trade" of {_player} to player
+
+            # 교환 물품 설정 화면에서 닫음
+            else:
+                wait 2 tick
+                open metadata tag "trade" of player to player
+
+# 강화 화면을 닫을 때 안에 있던 아이템을 플레이어에게 지급
+on inventory close:
+    if event-inventory is metadata tag "enforce" of player:
+        give player slot 20 of metadata tag "enforce" of player
+        give player slot 22 of metadata tag "enforce" of player
+        give player slot 24 of metadata tag "enforce" of player
+
+# 상점을 닫을 때 안에 있던 아이템을 플레이어에게 지급
+on inventory close:
+    if event-inventory is metadata tag "store" of player:
+        loop all items in metadata tag "store" of player:
+            if loop-slot is not 0, 1, 2, 3, 4, 5, 6, 7, 8, 45, 46, 47, 48, 49, 50, 51, 52 or 53:
+                give loop-item to player
+
+# 창고를 닫을 때 안에 있던 아이템을 변수에 저장 및 메인 GUI 출력
+on inventory close:
+    if event-inventory is metadata tag "inv" of player:
+        loop all items in metadata tag "inv" of player:
+            if loop-item is not paper with custom model data 26:
+                set {inv::%uuid of player%::%index of loop-slot%} to loop-item

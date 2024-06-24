@@ -1,0 +1,141 @@
+# 인챈트 테이블 사용 금지
+on inventory open:
+    if event-inventory is enchanting table inventory:
+        cancel event
+        send "%{W}% 인챈트 테이블을 사용 할 수 없습니다."
+        play sound "UI_BUTTON_CLICK" with volume 0.5
+
+# 모루 사용 금지
+on inventory open:
+    if event-inventory is anvil inventory:
+        cancel event
+        send "%{W}% 모루를 사용 할 수 없습니다."
+        play sound "UI_BUTTON_CLICK" with volume 0.5
+
+# 겉날개 착용 금지
+on inventory click:
+    if event-item is elytra:
+        if event-item is not {simple}:
+            cancel event
+            play sound "UI_BUTTON_CLICK" with volume 0.5
+            remove 1 of event-item from event-inventory
+            AddStyle(player, "겉날개를 얻은 후 삭제 시킴")
+            send "%{W}% 자연 스폰된 겉날개는 착용할 수 없습니다."         
+
+# 겉날개 우클릭 착용 금지
+on rightclick with elytra:
+    if event-item is not {simple}:
+        cancel event
+        remove item from player's tool
+        AddStyle(player, "겉날개를 얻은 후 삭제 시킴")
+        send "%{W}% 자연 스폰된 겉날개는 착용할 수 없습니다." to player
+
+# 형판 복사 금지
+on craft of smithing template:
+    cancel event
+    send "%{W}% 형판을 복사할 수 없습니다."
+    
+# TNT와 TNT 카트 폭발 금지
+on explode:
+    if event-entity is primed tnt or explosive minecart:
+        cancel event
+
+# 죽을 경우 플레이어 경험치 보존, 조건부 인벤 세이브
+on death of player:
+    keep the experience
+
+    if {invsave.%uuid of victim%} > 0:
+        keep the inventory
+        clear drops
+
+        remove 1 from {invsave.%uuid of victim%}
+        send "%{S}% 인벤 세이브 1회권을 사용하여 인벤토리를 보호합니다." to victim
+        send "%{S}% 남은 인벤 세이브: &5%{invsave.%uuid of victim%}%" to victim
+
+# 레벨의 변화
+on level change:
+    set {_lvpoint} to player's level
+    loop {status::%uuid of player%::*}:
+        remove loop-value from {_lvpoint}
+
+    add {_lvpoint} to {status::%uuid of player%::point}
+    send "%{S}% 레벨 업을 하여 스탯 포인트가 &c%{_lvpoint}%&2 증가 했습니다."
+
+    if player's level > 119:
+        AddStyle(player, "120레벨 달성")
+
+    if player's level > 89:
+        AddStyle(player, "90레벨 달성")
+
+    if player's level > 59:
+        AddStyle(player, "60레벨 달성")
+
+    if player's level > 29:
+        AddStyle(player, "30레벨 달성")
+
+    if player's level > 14:
+        AddStyle(player, "15레벨 달성")
+
+    if player's level > 4:
+        AddStyle(player, "5레벨 달성")
+        
+# F키로 GUI 열기
+on swap hand items:
+    if {gui.%uuid of player%} is set:
+        cancel event
+        open {main_GUI} to player
+
+# 플레이어가 처음 접속하면 변수를 설정
+on first join:
+    make player run cmd "/varset" as op
+
+# 플레이어 입장 시 설정
+on join:
+    play sound "entity.player.levelup" with volume 0.5 and pitch 0.5
+
+    send title "&a마크 야생 RPG" with subtitle "&2환영합니다! 도움말 확인 &c/h, /help" to player for 5 seconds
+
+    if player is op:
+        set join message to "&f[&4&l관리자&f]&2%player%&f님이 서버에 접속하였습니다."
+
+        if {inquiry::*} is set:
+            set {_count} to 0
+            loop {inquiry::*}:
+                add 1 to {_count}
+
+            send "%{W}%확인하지 않은 문의 &2%{_count}%&c개가 있습니다."
+    else:
+        if {style.%uuid of player%} is set:
+            set {_style} to colored {style.%uuid of player%}
+            set join message to "&f[%{_style}%&f]&2%player%&f님이 서버에 접속하였습니다."
+        else:
+            set join message to "&f[&3USER&f]&2%player%&f님이 서버에 접속하였습니다."
+
+    send "%{S}% 새로운 패치 내역이 적용되었습니다. 서버 공지를 확인하세요." to player
+
+    delete {trade.%uuid of player%}
+
+# 플레이어 퇴장 시 메세지 수정
+on quit:
+    if player is op:
+        set quit message to "&f[&4&l관리자&f]&2%player%&f님이 서버에서 퇴장하였습니다."
+    else:
+        if {style.%uuid of player%} is set:
+            set {_style} to colored {style.%uuid of player%}
+            set quit message to "&f[%{_style}%&f]&2%player%&f님이 서버에서 퇴장하였습니다."
+        else:
+            set quit message to "&f[&3USER&f]&2%player%&f님이 서버에서 퇴장하였습니다."
+
+# 채팅 시 플레이어들의 레벨과 칭호를 출력
+on chat:
+    set {_level} to player's level
+    set {_name} to player's display name
+
+    if player is op:
+        set chat format to "&f[&4&l관리자&f][&2%{_name}%&f]: [message]"
+    else:
+        if {style.%uuid of player%} is set:
+            set {_style} to colored {style.%uuid of player%}
+            set chat format to "&e&l[Lv. %{_level}%]&f[%{_style}%&f][&2%{_name}%&f]: [message]"
+        else:
+            set chat format to "&e&l[Lv. %{_level}%]&f[&3USER&f]&f[&2%{_name}%&f]: [message]"
